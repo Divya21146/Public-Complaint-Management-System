@@ -4,47 +4,23 @@ session_start();
 
   if(isset($_POST['btn']))
 {
- extract($_POST);
-$id=$_GET['id'];
-
-// Check if file was uploaded successfully
-if (isset($_FILES['cdoc']) && $_FILES['cdoc']['error'] === UPLOAD_ERR_OK) {
+  extract($_POST);
+  $id=$_GET['id'];
     $file_name=$_FILES['cdoc']['name'];
     $file_loc=$_FILES['cdoc']['tmp_name'];
     $folder="upload/";
+
     $path=move_uploaded_file($file_loc,$folder.$file_name);
-    if (!$path) {
-        echo '<script>alert("Error: Could not upload file.")</script>';
-        exit();
-    }
-} else {
-    echo '<script>alert("Error: File upload failed.")</script>';
-    exit();
+
+$qry1 = mysqli_query($conn, "UPDATE regcomplaint SET cat='$cat',  ctitle='$ctitle',cdetail='$cdetail', cdoc='$file_name', district='$district', place='$place' WHERE id='$id'");
+if($qry1)
+{
+header("location:unot.php");
 }
-
-// Check if file was uploaded successfully
-if (isset($_FILES['cimage']) && $_FILES['cimage']['error'] === UPLOAD_ERR_OK) {
-    $file_name1=$_FILES['cimage']['name'];
-    $file_loc1=$_FILES['cimage']['tmp_name'];
-    $folder1="images/";
-    $path1=move_uploaded_file($file_loc1,$folder1.$file_name1);
-    if (!$path1) {
-        echo '<script>alert("Error: Could not upload image.")</script>';
-        exit();
-    }
-} else {
-    echo '<script>alert("Error: Image upload failed.")</script>';
-    exit();
+else
+{
+    echo '<script>alert(" updated was not completed there is a error please try again ")</script>';
 }
-
-$qry1 = mysqli_query($conn, "UPDATE regcomplaint SET cat='$cat', ctitle='$ctitle', cdetail='$cdetail', cdoc='$file_name', district='$district', place='$place', cimage='$file_name1' WHERE id='$id'");
-
-if($qry1) {
-    header("location:unot.php");
-} else {
-    echo '<script>alert("Error: Update was not completed. Please try again.")</script>';
-}
-
 }  
 
 ?>
@@ -199,6 +175,17 @@ button:hover::before {
     </ul>
     <form method="get"><button class="back" name="logout">Logout</button></form>
 </div>
+<?php
+        if(isset($_GET['logout'])) {
+    session_destroy();
+    unset($_SESSION['umail']);
+       unset($_SESSION['uname']);
+    header('location:userlog.php');
+}
+if ($_SESSION['umail'] == "") {
+  header('location:userlog.php');
+}
+?>
 </nav>
 	<div>
 
